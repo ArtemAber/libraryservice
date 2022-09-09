@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+  <meta charset="UTF-8">
+  <title>Данные книги</title>
+</head>
+
+<header>
+  <div id="menu">
+    <button th:if="${admin}"><a th:href="@{/people}" style="text-decoration: none" th:if="${admin}">Все клиенты</a></button>
+    <button><a th:href="@{/books}" style="text-decoration: none">Все книги</a></button>
+    <button th:unless="${admin}"><a th:href="@{/people}" style="text-decoration: none" th:unless="${admin}">Мой профиль</a> </button>
+  </div>
+</header>
+<br/>
+
+<body>
+
+<p th:text="${book.getTitle() + ', ' + book.getAuthor() + ', ' + book.getYearOfPublication()}">value</p>
+
+<p th:text="${'Книга свободна.'}" th:unless="${reader}">
+
+<form th:method="PATCH" th:action="@{/books/{bookId}/addperson(bookId=${book.getBookId()})}" th:if="!${reader} and ${admin}">
+  <p th:text="${'Кому ее назначить?'}"></p>
+  <label for="person">Выберите человека: </label>
+  <select th:object="${person}" th:field="*{personId}" id="person">
+    <option th:each="person : ${people}" th:value="${person.getPersonId()}"
+            th:text="${person.getFio()}"></option>
+  </select>
+  <input type="submit" value="назначить"/>
+</form>
+
+<p th:text="${'Книга сейчас у: ' + reader.getFio()}" th:if="${reader} and ${admin}">value</p>
+
+<p th:text="${'Книга занята'}" th:if="${reader} and !${admin}"></p>
+
+
+<form th:method="PATCH" th:action="@{/books/{bookId}/free(bookId=${book.getBookId()})}" th:object="${book}" th:if="${reader} and ${admin}">
+  <input type="submit" value="освободить"/>
+</form>
+<hr/>
+
+<form th:method="GET" th:action="@{/books/{bookId}/edit(bookId=${book.getBookId()})}" th:if="${admin}">
+  <input type="submit" value="изменить данные книги"/>
+</form>
+
+<form th:method="DELETE" th:action="@{/books/{bookId}(bookId=${book.getBookId()})}" th:if="${admin}">
+  <input type="submit" value="удалить книгу"/>
+</form>
+
+<form th:method="POST" th:action="@{/logout}">
+  <input type="submit" value="выход">
+  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+</form>
+
+</body>
+</html>

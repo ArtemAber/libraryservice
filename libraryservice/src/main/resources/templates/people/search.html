@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Поиск клиента</title>
+</head>
+
+<header>
+    <div id="menu">
+        <button><a th:href="@{/people}" style="text-decoration: none">Все клиенты</a></button>
+        <button><a th:href="@{/books}" style="text-decoration: none">Все книги</a></button>
+    </div>
+</header>
+<br/>
+
+<body>
+
+<form th:method="PATCH" th:action="@{/people/search}">
+    <label for="startingWith">Введите часть ФИО: </label>
+    <input type="text" id="startingWith" name="startingWith"/>
+    <br/>
+    <input type="submit" value="искать">
+</form>
+
+<div th:each="person : ${people}" th:unless="${people.isEmpty()}">
+    <a th:href="@{/people/{personId}(personId=${person.getPersonId()})}"
+       th:text="${person.getFio() + ', ' + person.getDateOfBirth()}">user</a>
+</div>
+<p th:text="${'Людей не найдено'}" th:if="${people.isEmpty()}">person</p>
+
+<form th:method="POST" th:action="@{/logout}">
+    <input type="submit" value="выход">
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+</form>
+
+</body>
+</html>

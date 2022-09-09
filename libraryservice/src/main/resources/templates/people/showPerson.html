@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Данные читателя</title>
+</head>
+
+<header>
+  <div id="menu">
+    <button th:if="${admin}"><a th:href="@{/people}" style="text-decoration: none" th:if="${admin}">Все клиенты</a></button>
+    <button><a th:href="@{/books}" style="text-decoration: none">Все книги</a></button>
+    <button th:unless="${admin}"><a th:href="@{/people}" style="text-decoration: none" th:unless="${admin}">Мой профиль</a> </button>
+  </div>
+</header>
+<br/>
+
+<body>
+
+<p th:text="${person.getFio() + ', ' + person.getDateOfBirth() + ' тел: ' + person.getPhoneNumber()}">VALUE</p>
+
+<p th:text="${'Человек пока не взял ни одной книги'}" th:if="${books.isEmpty()}"></p>
+
+<p th:text="${'Книги: '}" th:unless="${books.isEmpty()}"></p>
+<div th:each="book : ${books}" th:unless="${books.isEmpty()}">
+  <p th:text="${book.getTitle() + ', ' + book.getAuthor() + ', ' + book.getYearOfPublication()}">user</p>
+</div>
+
+<br/>
+<hr/>
+
+<form th:method="GET" th:action="@{/people/{personId}/edit(personId=${person.getPersonId()})}" th:if="${admin}">
+  <input type="submit" value="изменить данные читателя"/>
+</form>
+
+<form th:method="DELETE" th:action="@{/people/{personId}(personId=${person.getPersonId()})}" th:if="${admin}">
+  <input type="submit" value="удалить"/>
+</form>
+
+<form th:method="POST" th:action="@{/logout}">
+  <input type="submit" value="выход">
+  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+</form>
+
+</body>
+</html>

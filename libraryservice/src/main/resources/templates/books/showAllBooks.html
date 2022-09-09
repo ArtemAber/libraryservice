@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Все книги</title>
+</head>
+
+<header>
+    <div id="menu">
+        <button th:if="${admin}"><a th:href="@{/people}" style="text-decoration: none" th:if="${admin}">Все клиенты</a></button>
+        <button><a th:href="@{/books}" style="text-decoration: none">Все книги</a></button>
+        <button th:unless="${admin}"><a th:href="@{/people}" style="text-decoration: none" th:unless="${admin}">Мой профиль</a> </button>
+    </div>
+</header>
+<br/>
+
+<body>
+<form th:method="GET" th:action="@{/books/search}">
+    <input type="submit" value="Найти книгу по названию">
+</form>
+
+<div th:each="book : ${books}">
+    <a th:href="@{/books/{bookId}(bookId=${book.getBookId()})}"
+       th:text="${book.getTitle() + ', ' + book.getAuthor() + ', ' + book.getYearOfPublication()}">book</a>
+</div>
+
+<br/>
+<hr/>
+
+<form th:method="GET" th:action="@{/books/new}" th:if="${admin}">
+    <input type="submit" value="Создать новую книгу">
+</form>
+
+<form th:method="POST" th:action="@{/logout}">
+    <input type="submit" value="выход">
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+</form>
+
+</body>
+</html>

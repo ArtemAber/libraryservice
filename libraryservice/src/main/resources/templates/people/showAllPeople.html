@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Все читатели</title>
+</head>
+
+<header>
+  <div id="menu">
+    <button><a th:href="@{/people}" style="text-decoration: none">Все клиенты</a></button>
+    <button><a th:href="@{/books}" style="text-decoration: none">Все книги</a></button>
+  </div>
+</header>
+<br/>
+
+<body>
+
+<form th:method="GET" th:action="@{/people/search}" th:if="${admin}">
+  <input type="submit" value="Найти клиента по фамилии">
+</form>
+
+<div th:each="person : ${people}">
+  <a th:href="@{/people/{personId}(personId=${person.getPersonId()})}"
+     th:text="${person.getFio() + ', ' + person.getDateOfBirth()}">user</a>
+</div>
+
+<br/>
+<hr/>
+
+<form th:method="GET" th:action="@{/people/new}" th:if="${admin}">
+  <input type="submit" value="создать нового читателя">
+</form>
+
+<form th:method="POST" th:action="@{/logout}">
+  <input type="submit" value="выход">
+  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+</form>
+
+</body>
+</html>

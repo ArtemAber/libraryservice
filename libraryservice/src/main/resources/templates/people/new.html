@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Создание нового читателя</title>
+</head>
+
+<header>
+  <div id="menu">
+    <button><a th:href="@{/people}" style="text-decoration: none">Все клиенты</a></button>
+    <button><a th:href="@{/books}" style="text-decoration: none">Все книги</a></button>
+  </div>
+</header>
+<br/>
+
+<body>
+<form th:method="POST" th:action="@{/people}" th:object="${person}">
+  <label for="fio">Введите ФИО: </label>
+  <input type="text" th:field="*{fio}" id="fio">
+  <p style="color: red" th:if="${#fields.hasErrors('fio')}" th:errors="*{fio}">Name error</p>
+  <br/>
+  <label for="dateOfBirth">Введите дату рождения(дд.мм.гггг): </label>
+  <input type="date" th:field="*{dateOfBirth}" id="dateOfBirth">
+  <p style="color: red" th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}">Date of birth error</p>
+  <br/>
+  <label for="phoneNumber">Введите номер телефона в формате 89*********: </label>
+  <input type="tel" pattern="89[0-9]{9}" th:field="*{phoneNumber}" id="phoneNumber">
+  <p style="color: red" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}">phoneNumber error</p>
+  <br/>
+  <label for="login">Введите логин: </label>
+  <input type="text" th:field="*{login}" id="login">
+  <div style="color: red" th:if="${#fields.hasErrors('login')}" th:errors="*{login}">login error</div>
+  <br/>
+  <label for="password">Введите пароль: </label>
+  <input type="password" th:field="*{password}" id="password">
+  <div style="color: red" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password error</div>
+  <br/>
+  <input type="submit" value="создать"/>
+</form>
+
+
+</body>
+</html>
