@@ -29,4 +29,4 @@
 //        query.setParameter("person", person);
 //        return query.list();
 //    }
-//}
+//} проверка гита
