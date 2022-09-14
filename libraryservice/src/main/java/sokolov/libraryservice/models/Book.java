@@ -111,15 +111,15 @@ public class Book {
         this.accountingOfBooksList = accountingOfBooksList;
     }
 
-    public String getPerson() {
-        String fio = null;
+    public Person getPerson() {
+        Person person = new Person();
         for(AccountingOfBooks accounting: accountingOfBooksList) {
-            if(accounting.getStatus().toString().equals("на_руках")) {
+            if((accounting.getStatus() == StatusOfAccounting.на_руках) | (accounting.getStatus() == StatusOfAccounting.забронирована)) {
                 Hibernate.initialize(accounting.getPerson());
-                fio = accounting.getPerson().getFio();
+                person = accounting.getPerson();
             }
         }
-        return fio;
+        return person;
     }
 
     @Override

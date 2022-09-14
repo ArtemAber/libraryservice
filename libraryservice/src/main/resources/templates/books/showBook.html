@@ -19,6 +19,18 @@
 <p th:text="${book.getTitle() + ', ' + book.getAuthor() + ', ' + book.getYearOfPublication()}">value</p>
 
 <p th:text="${'Книга свободна.'}" th:unless="${reader}">
+<form th:method="POST" th:action="@{/books/bookAbook/{bookId}(bookId=${book.getBookId()})}" th:object="${book}" th:unless="${reader}">
+  <input type="submit" value="забронировать"/>
+</form>
+<form th:method="PATCH" th:action="@{/books/{bookId}/free(bookId=${book.getBookId()})}" th:object="${book}"
+      th:if="${bookPersonId == whoLoggedIn.getPersonId()} and ${book.getActivity().toString().equals('забронирована')}">
+  <p th:text="${'Вы забронировали данную книгу'}"/>
+  <p th:text="${'Бронь до ' + bookingTime}"/>
+  <input type="submit" value="отменить бронь"/>
+</form>
+
+<p th:text="${'Вы взяли данную книгу на руки ' + dateOfCapture + ' числа.'}"
+   th:if="${bookPersonId == whoLoggedIn.getPersonId()} and ${book.getActivity().toString().equals('на_руках')}"/>
 
 <form th:method="PATCH" th:action="@{/books/{bookId}/addperson(bookId=${book.getBookId()})}" th:if="!${reader} and ${admin}">
   <p th:text="${'Кому ее назначить?'}"></p>
@@ -30,9 +42,13 @@
   <input type="submit" value="назначить"/>
 </form>
 
-<p th:text="${'Книга сейчас у: ' + reader.getFio()}" th:if="${reader} and ${admin}">value</p>
+<p th:text="${'Книга сейчас у: ' + reader.getFio()}" th:if="${admin} and ${book.getActivity().toString().equals('на_руках')}">value</p>
+<p th:text="${'Книгу забронировал: ' + reader.getFio()}" th:if="${admin} and ${book.getActivity().toString().equals('забронирована')}"></p>
+<p th:text="${'Бронь до ' + bookingTime}" th:if="${admin} and ${book.getActivity().toString().equals('забронирована')}"></p>
+<p th:text="${'Книга сейчас на руках у читателя.'}" th:if="!${admin} and ${book.getActivity().toString().equals('на_руках')} and !${bookPersonId == whoLoggedIn.getPersonId()}">value</p>
 
-<p th:text="${'Книга занята'}" th:if="${reader} and !${admin}"></p>
+<p th:text="${'Книгу забронировали. Бронь до ' + bookingTime}" th:if="${reader} and !${admin} and !${bookPersonId == whoLoggedIn.getPersonId()}
+    and ${book.getActivity().toString().equals('забронирована')}"></p>
 
 
 <form th:method="PATCH" th:action="@{/books/{bookId}/free(bookId=${book.getBookId()})}" th:object="${book}" th:if="${reader} and ${admin}">

@@ -5,14 +5,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sokolov.libraryservice.models.AccountingOfBooks;
-import sokolov.libraryservice.models.Book;
-import sokolov.libraryservice.models.Person;
-import sokolov.libraryservice.models.StatusOfAccounting;
+import sokolov.libraryservice.models.*;
 import sokolov.libraryservice.repositories.PeopleRepository;
 import sokolov.libraryservice.repositories.BooksRepository;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -84,7 +85,7 @@ public class PeopleService {
         Book book = booksRepository.findById(bookId).orElse(null);
 
         for(AccountingOfBooks accounting: book.getAccountingOfBooksList()) {
-            if(accounting.getStatus() == StatusOfAccounting.на_руках) {
+            if((accounting.getStatus() == StatusOfAccounting.на_руках) | (accounting.getStatus() == StatusOfAccounting.забронирована)) {
                 return peopleRepository.findById(accounting.getPerson().getPersonId()).orElse(null);
             }
         }
@@ -100,5 +101,36 @@ public class PeopleService {
             }
         }
         return people;
+    }
+
+    @Transactional
+    public void resetDates() throws ParseException {
+        List<Book> bookList = booksRepository.findAll();
+        List<Book> bookResetList = new ArrayList<>();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar calendarOld = Calendar.getInstance();
+        Calendar calendarNew = Calendar.getInstance();
+        calendarNew.setTime(new Date());
+        for (Book book: bookList) {
+            if (book.getActivity() == StatusOfBook.забронирована) {
+                try {
+                    calendarOld.setTime(book.getAccountingOfBooksList().stream()
+                            .filter(accountingOfBooks -> accountingOfBooks.getStatus() == StatusOfAccounting.забронирована)
+                            .findAny().get().getDateWasTaken());
+                } catch (Exception e) {
+                    continue;
+                }
+                calendarOld.add(Calendar.DATE, 3);
+                if (calendarNew.after(calendarOld)) {
+                    book.setActivity(StatusOfBook.свободна);
+                    bookResetList.add(book);
+                    AccountingOfBooks accounting = book.getAccountingOfBooksList().stream()
+                            .filter(accountingOfBooks -> accountingOfBooks.getStatus() == StatusOfAccounting.забронирована)
+                            .findAny().orElse(null);
+                    accounting.setDateReturnBook(new Date());
+                    accounting.setStatus(StatusOfAccounting.возвращена);
+                }
+            }
+        }
     }
 }

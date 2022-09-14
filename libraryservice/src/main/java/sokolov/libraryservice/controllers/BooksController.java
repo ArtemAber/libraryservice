@@ -48,17 +48,23 @@ public class BooksController {
 
     @GetMapping("/{bookId}")
     public String showBook(@PathVariable("bookId") int bookId, Model model, @ModelAttribute("person") PersonDTO personDTO) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        PersonDetails personDetails = (PersonDetails) authentication.getPrincipal();
+
+        model.addAttribute("whoLoggedIn", personDetails.getPerson());
         model.addAttribute("book", convertToBookDTO(booksService.showBook(bookId)));
+        model.addAttribute("bookPersonId", booksService.showBook(bookId).getPerson().getPersonId());
         model.addAttribute("people", peopleService.findAll().stream()
                 .map(this::convertToPersonDTO).collect(Collectors.toList()));
         model.addAttribute("admin", adminBool());
+        model.addAttribute("bookingTime", booksService.getBookingTime(bookId));
+        model.addAttribute("dateOfCapture", booksService.getDateOfCapture(bookId));
 
         if (peopleService.showPersonByBookId(bookId) != null) {
             model.addAttribute("reader", convertToPersonDTO(peopleService.showPersonByBookId(bookId)));
         } else {
             model.addAttribute("reader", null);
         }
-
         return "books/showBook";
     }
 
@@ -70,10 +76,18 @@ public class BooksController {
     }
 
     @PatchMapping("/{bookId}/free")
-    public String freeBook(@ModelAttribute("book") BookDTO bookDTO) {
-        booksService.freeBook(convertToBook(bookDTO).getBookId());
+    public String freeBook(@PathVariable("bookId") int bookId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        PersonDetails personDetails = (PersonDetails) authentication.getPrincipal();
+        Person person = personDetails.getPerson();
 
-        return "redirect:/books/" + convertToBook(bookDTO).getBookId();
+        if(person.getRole().equals("ROLE_ADMIN")) {
+            booksService.freeBook(bookId);
+        } else if(booksService.showBook(bookId).getPerson().getPersonId() == person.getPersonId()) {
+            booksService.freeBook(bookId);
+        }
+
+        return "redirect:/books/" + bookId;
     }
 
     @GetMapping("/{bookId}/edit")
@@ -130,6 +144,15 @@ public class BooksController {
         model.addAttribute("books", booksService.findByTitleStartingWith(startingWith).stream()
                 .map(this::convertToBookDTO).collect(Collectors.toList()));
         return "books/search";
+    }
+
+    @PostMapping("/bookAbook/{bookId}")
+    public String bookAbook(@PathVariable("bookId") int bookId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        PersonDetails personDetails = (PersonDetails) authentication.getPrincipal();
+        Person person = personDetails.getPerson();
+        booksService.bookABook(bookId, person);
+        return "redirect:/books/" + bookId;
     }
 
     private Person convertToPerson(PersonDTO personDTO) {

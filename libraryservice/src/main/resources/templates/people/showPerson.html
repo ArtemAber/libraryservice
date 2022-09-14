@@ -25,6 +25,12 @@
   <p th:text="${book.getTitle() + ', ' + book.getAuthor() + ', ' + book.getYearOfPublication()}">user</p>
 </div>
 
+<hr/>
+<p th:text="${'Забронированные книги: '}" th:unless="${bookedBooks.isEmpty()}"></p>
+<div th:each="book : ${bookedBooks}" th:unless="${bookedBooks.isEmpty()}">
+  <p th:text="${book.getTitle() + ', ' + book.getAuthor() + ', ' + book.getYearOfPublication()}"></p>
+</div>
+
 <br/>
 <hr/>
 

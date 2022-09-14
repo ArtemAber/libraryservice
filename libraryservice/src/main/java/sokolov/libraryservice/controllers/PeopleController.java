@@ -59,7 +59,17 @@ public class PeopleController {
         model.addAttribute("person", convertToPersonDTO(peopleService.findOne(personId)));
         model.addAttribute("books", accountingService.showBooksByPerson(personId).stream()
                 .map(this::convertToBookDTO).collect(Collectors.toList()));
+        model.addAttribute("bookedBooks", accountingService.showBookedBooksByPerson(personId)
+                .stream().map(this::convertToBookDTO).collect(Collectors.toList()));
         model.addAttribute("admin", adminBool());
+
+        try {
+            peopleService.resetDates();
+            System.out.println("успешно");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("провал");
+        }
 
         return "people/showPerson";
     }

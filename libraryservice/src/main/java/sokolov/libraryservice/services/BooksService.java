@@ -9,10 +9,13 @@ import sokolov.libraryservice.repositories.AccountingRepository;
 import sokolov.libraryservice.repositories.BooksRepository;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -54,12 +57,11 @@ public class BooksService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void freeBook(int bookId) {
         Book book = booksRepository.findById(bookId).orElse(null);
         book.setActivity(StatusOfBook.свободна);
         for (AccountingOfBooks accounting: book.getAccountingOfBooksList()) {
-            if (accounting.getStatus() == StatusOfAccounting.на_руках) {
+            if ((accounting.getStatus() == StatusOfAccounting.на_руках) | (accounting.getStatus() == StatusOfAccounting.забронирована)) {
                 accounting.setStatus(StatusOfAccounting.возвращена);
                 accounting.setDateReturnBook(new Date());
             }
@@ -96,5 +98,41 @@ public class BooksService {
             }
         }
         return books;
+    }
+
+    @Transactional
+    public void bookABook(int bookId, Person person) {
+        Book book = booksRepository.findById(bookId).orElse(null);
+        book.setActivity(StatusOfBook.забронирована);
+        AccountingOfBooks accounting = new AccountingOfBooks(person, book, new Date(), StatusOfAccounting.забронирована);
+        accountingRepository.save(accounting);
+    }
+
+    public String getBookingTime(int bookId) {
+        Calendar calendar = Calendar.getInstance();
+        try {
+            calendar.setTime(showBook(bookId).getAccountingOfBooksList()
+                    .stream().filter(accountingOfBooks -> accountingOfBooks.getStatus() == StatusOfAccounting.забронирована)
+                    .findAny().orElse(null).getDateWasTaken());
+        } catch (Exception e) {
+            return null;
+        }
+        calendar.add(Calendar.DATE, 3);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        System.out.println(dateFormat.format(calendar.getTime()));
+        return dateFormat.format(calendar.getTime());
+    }
+
+    public String getDateOfCapture(int bookId) {
+        Calendar calendar = Calendar.getInstance();
+        try {
+            calendar.setTime(showBook(bookId).getAccountingOfBooksList()
+                    .stream().filter(accountingOfBooks -> accountingOfBooks.getStatus() == StatusOfAccounting.на_руках)
+                    .findAny().orElse(null).getDateWasTaken());
+        } catch (Exception e) {
+            return null;
+        }
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        return dateFormat.format(calendar.getTime());
     }
 }

@@ -41,4 +41,21 @@ public class AccountingService {
         }
         return bookList;
     }
+
+    public List<Book> showBookedBooksByPerson(int personId) {
+        List<AccountingOfBooks> accountingOfBooksList1 = accountingRepository.findAll();
+        List<AccountingOfBooks> accountingOfBooksList = new ArrayList<>();
+        for(AccountingOfBooks accounting: accountingOfBooksList1) {
+            if(accounting.getPerson().getPersonId() == personId) {
+                accountingOfBooksList.add(accounting);
+            }
+        }
+        List<Book> bookList = new ArrayList<>();
+        for(AccountingOfBooks accounting: accountingOfBooksList) {
+            if(accounting.getStatus() == StatusOfAccounting.забронирована) {
+                bookList.add(accounting.getBook());
+            }
+        }
+        return bookList;
+    }
 }
