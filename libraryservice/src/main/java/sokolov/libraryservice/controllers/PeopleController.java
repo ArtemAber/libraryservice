@@ -55,7 +55,10 @@ public class PeopleController {
 
     @GetMapping("/{personId}")
     public String showPerson(@PathVariable("personId") int personId, Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        PersonDetails personDetails = (PersonDetails) authentication.getPrincipal();
 
+        model.addAttribute("whoLoggedIn", personDetails.getPerson());
         model.addAttribute("person", convertToPersonDTO(peopleService.findOne(personId)));
         model.addAttribute("books", accountingService.showBooksByPerson(personId).stream()
                 .map(this::convertToBookDTO).collect(Collectors.toList()));

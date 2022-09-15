@@ -6,7 +6,7 @@
 </head>
 
 <header>
-    <div id="menu">
+    <div id="menu1">
         <button th:if="${admin}"><a th:href="@{/people}" style="text-decoration: none" th:if="${admin}">Все клиенты</a></button>
         <button><a th:href="@{/books}" style="text-decoration: none">Все книги</a></button>
         <button th:unless="${admin}"><a th:href="@{/people}" style="text-decoration: none" th:unless="${admin}">Мой профиль</a> </button>
@@ -15,9 +15,11 @@
 <br/>
 
 <body>
-<form th:method="GET" th:action="@{/books/search}">
-    <input type="submit" value="Найти книгу по названию">
-</form>
+
+<div id="menu2">
+    <button><a th:href="@{/books/search}" style="text-decoration: none">Найти книгу по названию</a></button>
+    <button><a th:href="@{/books/showFreeBooks}" style="text-decoration: none">Показать свободные книги</a></button>
+</div>
 
 <div th:each="book : ${books}">
     <a th:href="@{/books/{bookId}(bookId=${book.getBookId()})}"

@@ -46,6 +46,14 @@ public class BooksController {
         return "books/showAllBooks";
     }
 
+    @GetMapping("/showFreeBooks")
+    public String showFreeBooks(Model model) {
+        model.addAttribute("books", booksService.showFreeBooks().stream()
+                .map(this::convertToBookDTO).collect(Collectors.toList()));
+        model.addAttribute("admin", adminBool());
+        return "books/showAllBooks";
+    }
+
     @GetMapping("/{bookId}")
     public String showBook(@PathVariable("bookId") int bookId, Model model, @ModelAttribute("person") PersonDTO personDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

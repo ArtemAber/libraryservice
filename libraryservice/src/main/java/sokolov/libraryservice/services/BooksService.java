@@ -41,6 +41,16 @@ public class BooksService {
         return list;
     }
 
+    public List<Book> showFreeBooks() {
+        List<Book> list = new ArrayList<>();
+        for (Book book: booksRepository.findAll()) {
+            if (book.getActivity() == StatusOfBook.свободна) {
+                list.add(book);
+            }
+        }
+        return list;
+    }
+
     public Book showBook(int bookId) {
         return booksRepository.findById(bookId).orElse(null);
     }
@@ -135,4 +145,15 @@ public class BooksService {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         return dateFormat.format(calendar.getTime());
     }
+
+//    public String getReturnDate(int bookId) {
+//        Calendar calendar = Calendar.getInstance();
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+//        try {
+//            calendar.setTime(dateFormat.parse(getDateOfCapture(bookId)));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    return null;
+//    }
 }

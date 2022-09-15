@@ -18,7 +18,9 @@
 
 <p th:text="${person.getFio() + ', ' + person.getDateOfBirth() + ' тел: ' + person.getPhoneNumber()}">VALUE</p>
 
-<p th:text="${'Человек пока не взял ни одной книги'}" th:if="${books.isEmpty()}"></p>
+<p th:text="${'Человек пока не взял ни одной книги'}" th:if="${admin} and ${books.isEmpty()} and ${whoLoggedIn.getPersonId() != person.getPersonId()}"></p>
+<p th:text="${'Вы пока не взяли ни одной книги'}" th:if="${admin} and ${books.isEmpty()} and ${whoLoggedIn.getPersonId() == person.getPersonId()}"></p>
+<p th:text="${'Вы пока не взяли ни одной книги'}" th:if="!${admin} and ${books.isEmpty()}"></p>
 
 <p th:text="${'Книги: '}" th:unless="${books.isEmpty()}"></p>
 <div th:each="book : ${books}" th:unless="${books.isEmpty()}">
@@ -30,6 +32,9 @@
 <div th:each="book : ${bookedBooks}" th:unless="${bookedBooks.isEmpty()}">
   <p th:text="${book.getTitle() + ', ' + book.getAuthor() + ', ' + book.getYearOfPublication()}"></p>
 </div>
+<p th:text="${'Вы пока не забронировали ни одну книгу.'}" th:if="!${admin} and ${bookedBooks.isEmpty()}"></p>
+<p th:text="${'Человек пока не забронировал ни одну книгу.'}" th:if="${admin} and ${bookedBooks.isEmpty()} and ${whoLoggedIn.getPersonId() != person.getPersonId()}"></p>
+<p th:text="${'Вы пока не забронировали ни одну книгу.'}" th:if="${admin} and ${bookedBooks.isEmpty()} and ${whoLoggedIn.getPersonId() == person.getPersonId()}"></p>
 
 <br/>
 <hr/>
