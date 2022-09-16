@@ -133,4 +133,14 @@ public class PeopleService {
             }
         }
     }
+
+    @Transactional
+    public void setRoleAdmin(int personId) {
+        peopleRepository.findById(personId).orElse(null).setRole("ROLE_ADMIN");
+    }
+
+    @Transactional
+    public void setRoleUser(int personId) {
+        peopleRepository.findById(personId).orElse(null).setRole("ROLE_USER");
+    }
 }

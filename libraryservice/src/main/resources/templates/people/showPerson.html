@@ -24,13 +24,15 @@
 
 <p th:text="${'Книги: '}" th:unless="${books.isEmpty()}"></p>
 <div th:each="book : ${books}" th:unless="${books.isEmpty()}">
-  <p th:text="${book.getTitle() + ', ' + book.getAuthor() + ', ' + book.getYearOfPublication()}">user</p>
+  <a th:href="@{/books/{bookId}(bookId=${book.getBookId()})}"
+  th:text="${book.getTitle() + ', ' + book.getAuthor() + ', ' + book.getYearOfPublication()}">user</a>
 </div>
 
 <hr/>
 <p th:text="${'Забронированные книги: '}" th:unless="${bookedBooks.isEmpty()}"></p>
 <div th:each="book : ${bookedBooks}" th:unless="${bookedBooks.isEmpty()}">
-  <p th:text="${book.getTitle() + ', ' + book.getAuthor() + ', ' + book.getYearOfPublication()}"></p>
+  <a th:href="@{/books/{bookId}(bookId=${book.getBookId()})}"
+          th:text="${book.getTitle() + ', ' + book.getAuthor() + ', ' + book.getYearOfPublication()}"></a>
 </div>
 <p th:text="${'Вы пока не забронировали ни одну книгу.'}" th:if="!${admin} and ${bookedBooks.isEmpty()}"></p>
 <p th:text="${'Человек пока не забронировал ни одну книгу.'}" th:if="${admin} and ${bookedBooks.isEmpty()} and ${whoLoggedIn.getPersonId() != person.getPersonId()}"></p>
@@ -38,6 +40,13 @@
 
 <br/>
 <hr/>
+
+<form th:method="PATCH" th:action="@{/people/{personId}/setRoleAdmin(personId=${person.getPersonId()})}" th:if="${admin} and ${person.getRole().equals('ROLE_USER')} and ${whoLoggedIn.getPersonId() != person.getPersonId()}">
+  <input type="submit" value="Назначить администратором">
+</form>
+<form th:method="PATCH" th:action="@{/people/{personId}/setRoleUser(personId=${person.getPersonId()})}" th:if="${admin} and ${person.getRole().equals('ROLE_ADMIN')} and ${whoLoggedIn.getPersonId() != person.getPersonId()}">
+  <input type="submit" value="Снять с должности администратора">
+</form>
 
 <form th:method="GET" th:action="@{/people/{personId}/edit(personId=${person.getPersonId()})}" th:if="${admin}">
   <input type="submit" value="изменить данные читателя"/>

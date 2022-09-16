@@ -5,6 +5,7 @@ import sokolov.libraryservice.models.AccountingOfBooks;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +16,7 @@ public class PersonDTO {
 
     @NotEmpty(message = "ФИО не должно быть пустым")
     @Size(min = 2, max = 100, message = "ФИО должно быть от 2 до 100 символов")
+    @Pattern(regexp = "^[А-ЯЁ][а-яё]+ [А-ЯЁ][а-яё]+ [А-ЯЁ][а-яё]+$", message = "ФИО должно быть вида: Иванов Иван Иванович")
     private String fio;
 
     @Temporal(TemporalType.DATE)
@@ -27,8 +29,10 @@ public class PersonDTO {
 
     private List<AccountingOfBooks> accountingOfBooksList;
 
+    @NotEmpty(message = "Логин не должен быть пустым")
     private String login;
 
+    @NotEmpty(message = "Пароль не должен быть пустым")
     private String password;
 
     private String role;

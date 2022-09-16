@@ -4,6 +4,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
@@ -21,6 +22,7 @@ public class Person {
     @NotEmpty(message = "ФИО не должно быть пустым")
     @Size(min = 2, max = 100, message = "ФИО должно быть от 2 до 100 символов")
     @Column(name = "fio")
+    @Pattern(regexp = "^[А-ЯЁ][а-яё]+ [А-ЯЁ][а-яё]+ [А-ЯЁ][а-яё]+$", message = "ФИО должно быть вида: Иванов Иван Иванович")
     private String fio;
 
     @Column(name = "date_of_birth")
@@ -38,9 +40,11 @@ public class Person {
     private List<AccountingOfBooks> accountingOfBooksList;
 
     @Column(name = "login")
+    @NotEmpty(message = "Логин не должен быть пустым")
     private String login;
 
     @Column(name = "password")
+    @NotEmpty(message = "Пароль не должен быть пустым")
     private String password;
 
     @Column(name = "role")

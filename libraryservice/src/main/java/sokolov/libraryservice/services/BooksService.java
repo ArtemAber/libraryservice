@@ -98,6 +98,12 @@ public class BooksService {
     public void deleteBook(int bookId) {
         Book book = booksRepository.findById(bookId).orElse(null);
         book.setActivity(StatusOfBook.списана);
+        for (AccountingOfBooks accountingOfBooks : book.getAccountingOfBooksList()) {
+            if ((accountingOfBooks.getStatus() == StatusOfAccounting.на_руках) || (accountingOfBooks.getStatus() == StatusOfAccounting.забронирована)) {
+                accountingOfBooks.setStatus(StatusOfAccounting.возвращена);
+                accountingOfBooks.setDateReturnBook(new Date());
+            }
+        }
     }
 
     public List<Book> findByTitleStartingWith(String startingWith) {
@@ -144,6 +150,17 @@ public class BooksService {
         }
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         return dateFormat.format(calendar.getTime());
+    }
+
+    @Transactional
+    public void issueABookedBook(int bookId) {
+        for (AccountingOfBooks accountingOfBooks : showBook(bookId).getAccountingOfBooksList()) {
+            if (accountingOfBooks.getStatus() == StatusOfAccounting.забронирована) {
+                accountingOfBooks.setStatus(StatusOfAccounting.на_руках);
+                accountingOfBooks.setDateWasTaken(new Date());
+                showBook(bookId).setActivity(StatusOfBook.на_руках);
+            }
+        }
     }
 
 //    public String getReturnDate(int bookId) {

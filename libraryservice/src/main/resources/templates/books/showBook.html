@@ -50,6 +50,9 @@
 <p th:text="${'Книгу забронировали. Бронь до ' + bookingTime}" th:if="${reader} and !${admin} and !${bookPersonId == whoLoggedIn.getPersonId()}
     and ${book.getActivity().toString().equals('забронирована')}"></p>
 
+<form th:method="PATCH" th:action="@{/books/issue/{bookId}(bookId=${book.getBookId()})}" th:object="${book}" th:if="${book.getActivity().toString().equals('забронирована')} and ${admin}">
+    <input type="submit" value="выдать на руки">
+</form>
 
 <form th:method="PATCH" th:action="@{/books/{bookId}/free(bookId=${book.getBookId()})}" th:object="${book}" th:if="${reader} and ${admin}">
   <input type="submit" value="освободить"/>
@@ -60,7 +63,7 @@
   <input type="submit" value="изменить данные книги"/>
 </form>
 
-<form th:method="DELETE" th:action="@{/books/{bookId}(bookId=${book.getBookId()})}" th:if="${admin}">
+<form name="delete" th:method="DELETE" th:action="@{/books/{bookId}(bookId=${book.getBookId()})}" th:if="${admin}">
   <input type="submit" value="удалить книгу"/>
 </form>
 

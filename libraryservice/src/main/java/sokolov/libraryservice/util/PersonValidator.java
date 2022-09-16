@@ -1,20 +1,26 @@
 package sokolov.libraryservice.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import sokolov.libraryservice.models.Person;
 import sokolov.libraryservice.repositories.PeopleRepository;
+import sokolov.libraryservice.services.PeopleService;
 
 @Component
 public class PersonValidator implements Validator {
 
     private final PeopleRepository peopleRepository;
+    private final PeopleService peopleService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public PersonValidator(PeopleRepository peopleRepository) {
+    public PersonValidator(PeopleRepository peopleRepository, PeopleService peopleService, PasswordEncoder passwordEncoder) {
         this.peopleRepository = peopleRepository;
+        this.peopleService = peopleService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -35,6 +41,10 @@ public class PersonValidator implements Validator {
             if (peopleRepository.findByPhoneNumber(person.getPhoneNumber()).get().getPersonId() != person.getPersonId()) {
                 errors.rejectValue("phoneNumber", "", "Человек с таким телефоном уже существует");
             }
+        }
+
+        if(person.getDateOfBirth() == null) {
+            errors.rejectValue("dateOfBirth", "", "Дата рождения не должна быть пустая");
         }
     }
 }

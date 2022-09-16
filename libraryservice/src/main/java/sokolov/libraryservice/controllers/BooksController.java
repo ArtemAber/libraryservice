@@ -7,11 +7,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import sokolov.libraryservice.dto.BookDTO;
 import sokolov.libraryservice.dto.PersonDTO;
+import sokolov.libraryservice.models.AccountingOfBooks;
 import sokolov.libraryservice.models.Book;
 import sokolov.libraryservice.models.Person;
+import sokolov.libraryservice.models.StatusOfAccounting;
 import sokolov.libraryservice.security.PersonDetails;
 import sokolov.libraryservice.services.BooksService;
 import sokolov.libraryservice.services.PeopleService;
@@ -134,7 +137,11 @@ public class BooksController {
 
     @DeleteMapping("/{bookId}")
     public String deleteBook(@PathVariable("bookId") int bookId) {
-        booksService.deleteBook(bookId);
+        if (peopleService.showPersonByBookId(bookId) == null) {
+            booksService.deleteBook(bookId);
+        } else {
+            return "redirect:/books/" + bookId;
+        }
 
         return "redirect:/books";
     }
@@ -160,6 +167,12 @@ public class BooksController {
         PersonDetails personDetails = (PersonDetails) authentication.getPrincipal();
         Person person = personDetails.getPerson();
         booksService.bookABook(bookId, person);
+        return "redirect:/books/" + bookId;
+    }
+
+    @PatchMapping("/issue/{bookId}")
+    public String issueABookedBook(@PathVariable("bookId") int bookId) {
+        booksService.issueABookedBook(bookId);
         return "redirect:/books/" + bookId;
     }
 
