@@ -7,8 +7,10 @@ import sokolov.libraryservice.models.AccountingOfBooks;
 import sokolov.libraryservice.models.Book;
 import sokolov.libraryservice.models.StatusOfAccounting;
 import sokolov.libraryservice.repositories.AccountingRepository;
+import sokolov.libraryservice.repositories.BooksRepository;
 import sokolov.libraryservice.repositories.PeopleRepository;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,5 +59,11 @@ public class AccountingService {
             }
         }
         return bookList;
+    }
+
+    @Transactional
+    public void addDelay(AccountingOfBooks accountingOfBooks, String[] info) {
+        accountingOfBooks.setCountDayDelay(accountingOfBooks.getCountDayDelay() + Integer.parseInt(info[0]));
+        accountingOfBooks.setCountFine(accountingOfBooks.getCountFine() + Integer.parseInt(info[1]));
     }
 }

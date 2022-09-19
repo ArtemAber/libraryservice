@@ -9,13 +9,14 @@ import sokolov.libraryservice.repositories.AccountingRepository;
 import sokolov.libraryservice.repositories.BooksRepository;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -24,11 +25,13 @@ public class BooksService {
 
     private final BooksRepository booksRepository;
     private final AccountingRepository accountingRepository;
+    private final AccountingService accountingService;
 
     @Autowired
-    public BooksService(BooksRepository booksRepository, AccountingRepository accountingRepository) {
+    public BooksService(BooksRepository booksRepository, AccountingRepository accountingRepository, AccountingService accountingService) {
         this.booksRepository = booksRepository;
         this.accountingRepository = accountingRepository;
+        this.accountingService = accountingService;
     }
 
     public List<Book> showAllBooks() {
@@ -57,12 +60,14 @@ public class BooksService {
 
     @Transactional
     public void addPerson(Person person, int bookId) {
-        Date date = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE, 7);
         DateFormat format = new SimpleDateFormat("yyyy/MM/dd");
         Book book = booksRepository.findById(bookId).orElse(null);
         book.setActivity(StatusOfBook.на_руках);
 
-        AccountingOfBooks accounting = new AccountingOfBooks(person, book, date, StatusOfAccounting.на_руках);
+        AccountingOfBooks accounting = new AccountingOfBooks(person, book, new Date(), calendar.getTime(), StatusOfAccounting.на_руках);
         accountingRepository.save(accounting);
     }
 
@@ -70,10 +75,14 @@ public class BooksService {
     public void freeBook(int bookId) {
         Book book = booksRepository.findById(bookId).orElse(null);
         book.setActivity(StatusOfBook.свободна);
+        String[] info = getInfoDelay(bookId);
         for (AccountingOfBooks accounting: book.getAccountingOfBooksList()) {
             if ((accounting.getStatus() == StatusOfAccounting.на_руках) | (accounting.getStatus() == StatusOfAccounting.забронирована)) {
                 accounting.setStatus(StatusOfAccounting.возвращена);
                 accounting.setDateReturnBook(new Date());
+                if (info[0].length() > 0) {
+                    accountingService.addDelay(accounting, info);
+                }
             }
         }
     }
@@ -118,9 +127,12 @@ public class BooksService {
 
     @Transactional
     public void bookABook(int bookId, Person person) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE, 3);
         Book book = booksRepository.findById(bookId).orElse(null);
         book.setActivity(StatusOfBook.забронирована);
-        AccountingOfBooks accounting = new AccountingOfBooks(person, book, new Date(), StatusOfAccounting.забронирована);
+        AccountingOfBooks accounting = new AccountingOfBooks(person, book, new Date(), calendar.getTime(), StatusOfAccounting.забронирована);
         accountingRepository.save(accounting);
     }
 
@@ -163,14 +175,40 @@ public class BooksService {
         }
     }
 
-//    public String getReturnDate(int bookId) {
-//        Calendar calendar = Calendar.getInstance();
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-//        try {
-//            calendar.setTime(dateFormat.parse(getDateOfCapture(bookId)));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    return null;
-//    }
+    public String getPlannedDateReturnBook(int bookId) {
+        String plannedDateReturnBook = null;
+        for (AccountingOfBooks accountingOfBooks : booksRepository.findById(bookId).orElse(null).getAccountingOfBooksList()) {
+            if (accountingOfBooks.getStatus() == StatusOfAccounting.на_руках) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+                plannedDateReturnBook = dateFormat.format(accountingOfBooks.getPlannedDateReturnBook());
+            }
+        }
+        return plannedDateReturnBook;
+    }
+
+    public String[] getInfoDelay(int bookId) {
+        String[] info = new String[2];
+        Date planDate = null;
+        for (AccountingOfBooks accountingOfBooks : booksRepository.findById(bookId).orElse(null).getAccountingOfBooksList()) {
+            if (accountingOfBooks.getStatus() == StatusOfAccounting.на_руках) {
+                planDate = accountingOfBooks.getPlannedDateReturnBook();
+            }
+        }
+        Date newDate = new Date();
+
+        if (planDate != null) {
+            if (newDate.after(planDate)) {
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                LocalDate localDate1 = LocalDate.parse(planDate.toString(), formatter);
+                LocalDate localDate2 = LocalDate.parse(new SimpleDateFormat("yyyy-MM-dd").format(newDate), formatter);
+                Period period = Period.between(localDate1, localDate2);
+
+                info[0] = String.valueOf((period.getDays()));
+                info[1] = String.valueOf(Long.parseLong(info[0]) * 10);
+            }
+        }
+
+        return info;
+    }
 }

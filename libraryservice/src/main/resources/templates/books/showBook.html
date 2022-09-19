@@ -31,6 +31,11 @@
 
 <p th:text="${'Вы взяли данную книгу на руки ' + dateOfCapture + ' числа.'}"
    th:if="${bookPersonId == whoLoggedIn.getPersonId()} and ${book.getActivity().toString().equals('на_руках')}"/>
+<p th:text="${'Книгу необходимо сдать до: ' + plannedDateReturnBook}" th:if="${bookPersonId == whoLoggedIn.getPersonId()} and ${book.getActivity().toString().equals('на_руках')}"></p>
+
+<p th:text="${'У Вас просрочка!'}" style="color: red" th:if="${bookPersonId == whoLoggedIn.getPersonId()} and ${isDelay}"></p>
+<p th:text="${'Дней просрочки: ' + infoDelay1}" style="color: red" th:if="${bookPersonId == whoLoggedIn.getPersonId()} and ${isDelay}"></p>
+<p th:text="${'Сумма штрафа: ' + infoDelay2}" style="color: red" th:if="${bookPersonId == whoLoggedIn.getPersonId()} and ${isDelay}"></p>
 
 <form th:method="PATCH" th:action="@{/books/{bookId}/addperson(bookId=${book.getBookId()})}" th:if="!${reader} and ${admin}">
   <p th:text="${'Кому ее назначить?'}"></p>
@@ -43,6 +48,7 @@
 </form>
 
 <p th:text="${'Книга сейчас у: ' + reader.getFio()}" th:if="${admin} and ${book.getActivity().toString().equals('на_руках')}">value</p>
+<p th:text="${'Книгу необходимо сдать до: ' + plannedDateReturnBook}" th:if="${admin} and ${book.getActivity().toString().equals('на_руках')}"></p>
 <p th:text="${'Книгу забронировал: ' + reader.getFio()}" th:if="${admin} and ${book.getActivity().toString().equals('забронирована')}"></p>
 <p th:text="${'Бронь до ' + bookingTime}" th:if="${admin} and ${book.getActivity().toString().equals('забронирована')}"></p>
 <p th:text="${'Книга сейчас на руках у читателя.'}" th:if="!${admin} and ${book.getActivity().toString().equals('на_руках')} and !${bookPersonId == whoLoggedIn.getPersonId()}">value</p>

@@ -11,16 +11,16 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import sokolov.libraryservice.dto.BookDTO;
 import sokolov.libraryservice.dto.PersonDTO;
-import sokolov.libraryservice.models.AccountingOfBooks;
-import sokolov.libraryservice.models.Book;
-import sokolov.libraryservice.models.Person;
-import sokolov.libraryservice.models.StatusOfAccounting;
+import sokolov.libraryservice.models.*;
 import sokolov.libraryservice.security.PersonDetails;
 import sokolov.libraryservice.services.BooksService;
 import sokolov.libraryservice.services.PeopleService;
 import sokolov.libraryservice.util.BookValidator;
 
 import javax.validation.Valid;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 @Controller
@@ -76,6 +76,11 @@ public class BooksController {
         } else {
             model.addAttribute("reader", null);
         }
+        model.addAttribute("plannedDateReturnBook", booksService.getPlannedDateReturnBook(bookId));
+        model.addAttribute("isDelay", isDelay(bookId));
+        model.addAttribute("infoDelay1", booksService.getInfoDelay(bookId)[0]);
+        model.addAttribute("infoDelay2", booksService.getInfoDelay(bookId)[1]);
+
         return "books/showBook";
     }
 
@@ -197,5 +202,21 @@ public class BooksController {
         PersonDetails personDetails = (PersonDetails) authentication.getPrincipal();
         return personDetails.getAuthorities().stream().collect(Collectors.toList()).get(0)
                 .toString().equals("ROLE_ADMIN");
+    }
+
+    private Boolean isDelay(int bookId) {
+        if (booksService.showBook(bookId).getActivity() == StatusOfBook.на_руках){
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+            Date plannedDateReturnBook = booksService.showBook(bookId).getAccountingOfBooksList().stream()
+                    .filter(accountingOfBooks -> accountingOfBooks.getStatus() == StatusOfAccounting.на_руках)
+                    .findAny().get().getPlannedDateReturnBook();
+
+            if (plannedDateReturnBook.before(new Date())) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return null;
     }
 }

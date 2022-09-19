@@ -66,7 +66,6 @@ public class PeopleController {
         model.addAttribute("bookedBooks", accountingService.showBookedBooksByPerson(personId)
                 .stream().map(this::convertToBookDTO).collect(Collectors.toList()));
         model.addAttribute("admin", adminBool());
-
         try {
             peopleService.resetDates();
             System.out.println("успешно");

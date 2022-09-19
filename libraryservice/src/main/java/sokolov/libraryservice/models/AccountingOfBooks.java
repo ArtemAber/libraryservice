@@ -32,18 +32,30 @@ public class AccountingOfBooks {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date dateReturnBook;
 
+    @Column(name = "planned_date_return_book")
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date plannedDateReturnBook;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private StatusOfAccounting status;
 
+    @Column(name = "count_day_delay")
+    private int countDayDelay;
+
+    @Column(name = "count_fine")
+    private int countFine;
+
     public AccountingOfBooks() {
     }
 
-    public AccountingOfBooks(Person person, Book book, Date dateWasTaken, StatusOfAccounting status) {
+    public AccountingOfBooks(Person person, Book book, Date dateWasTaken, Date plannedDateReturnBook, StatusOfAccounting status) {
         this.person = person;
         this.book = book;
         this.dateWasTaken = dateWasTaken;
         this.status = status;
+        this.plannedDateReturnBook = plannedDateReturnBook;
     }
 
     public int getRecordId() {
@@ -86,12 +98,36 @@ public class AccountingOfBooks {
         this.dateReturnBook = dateReturnBook;
     }
 
+    public Date getPlannedDateReturnBook() {
+        return plannedDateReturnBook;
+    }
+
+    public void setPlannedDateReturnBook(Date plannedDateReturnBook) {
+        this.plannedDateReturnBook = plannedDateReturnBook;
+    }
+
     public StatusOfAccounting getStatus() {
         return status;
     }
 
     public void setStatus(StatusOfAccounting status) {
         this.status = status;
+    }
+
+    public int getCountDayDelay() {
+        return countDayDelay;
+    }
+
+    public void setCountDayDelay(int countDayDelay) {
+        this.countDayDelay = countDayDelay;
+    }
+
+    public int getCountFine() {
+        return countFine;
+    }
+
+    public void setCountFine(int countFine) {
+        this.countFine = countFine;
     }
 
     @Override
