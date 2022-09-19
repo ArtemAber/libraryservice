@@ -80,7 +80,7 @@ public class BooksService {
             if ((accounting.getStatus() == StatusOfAccounting.на_руках) | (accounting.getStatus() == StatusOfAccounting.забронирована)) {
                 accounting.setStatus(StatusOfAccounting.возвращена);
                 accounting.setDateReturnBook(new Date());
-                if (info[0].length() > 0) {
+                if (info != null) {
                     accountingService.addDelay(accounting, info);
                 }
             }
@@ -190,7 +190,7 @@ public class BooksService {
         String[] info = new String[2];
         Date planDate = null;
         for (AccountingOfBooks accountingOfBooks : booksRepository.findById(bookId).orElse(null).getAccountingOfBooksList()) {
-            if (accountingOfBooks.getStatus() == StatusOfAccounting.на_руках) {
+            if ((accountingOfBooks.getStatus() == StatusOfAccounting.на_руках) | (accountingOfBooks.getStatus() == StatusOfAccounting.забронирована)) {
                 planDate = accountingOfBooks.getPlannedDateReturnBook();
             }
         }
@@ -204,8 +204,11 @@ public class BooksService {
                 LocalDate localDate2 = LocalDate.parse(new SimpleDateFormat("yyyy-MM-dd").format(newDate), formatter);
                 Period period = Period.between(localDate1, localDate2);
 
-                info[0] = String.valueOf((period.getDays()));
+                info[0] = String.valueOf(period.getDays());
                 info[1] = String.valueOf(Long.parseLong(info[0]) * 10);
+            } else {
+                info[0] = String.valueOf(0);
+                info[1] = String.valueOf(0);
             }
         }
 

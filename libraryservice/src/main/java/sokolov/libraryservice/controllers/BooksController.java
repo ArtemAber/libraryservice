@@ -78,8 +78,10 @@ public class BooksController {
         }
         model.addAttribute("plannedDateReturnBook", booksService.getPlannedDateReturnBook(bookId));
         model.addAttribute("isDelay", isDelay(bookId));
-        model.addAttribute("infoDelay1", booksService.getInfoDelay(bookId)[0]);
-        model.addAttribute("infoDelay2", booksService.getInfoDelay(bookId)[1]);
+        if (booksService.showBook(bookId).getActivity() == StatusOfBook.на_руках) {
+            model.addAttribute("infoDelay1", booksService.getInfoDelay(bookId)[0]);
+            model.addAttribute("infoDelay2", booksService.getInfoDelay(bookId)[1]);
+        }
 
         return "books/showBook";
     }

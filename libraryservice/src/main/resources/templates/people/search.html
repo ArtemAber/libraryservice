@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Поиск клиента</title>
+    <script src="jquery-3.6.1.min.js"></script>
 </head>
 
 <header>
@@ -21,6 +22,10 @@
     <br/>
     <input type="submit" value="искать">
 </form>
+
+<script>
+    $(function ())
+</script>
 
 <div th:each="person : ${people}" th:unless="${people.isEmpty()}">
     <a th:href="@{/people/{personId}(personId=${person.getPersonId()})}"
