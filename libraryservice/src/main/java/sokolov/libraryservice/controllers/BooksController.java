@@ -7,7 +7,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import sokolov.libraryservice.dto.BookDTO;
 import sokolov.libraryservice.dto.PersonDTO;
@@ -18,7 +17,6 @@ import sokolov.libraryservice.services.PeopleService;
 import sokolov.libraryservice.util.BookValidator;
 
 import javax.validation.Valid;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.stream.Collectors;

@@ -1,9 +1,6 @@
 package sokolov.libraryservice.dto;
 
-import org.hibernate.Hibernate;
 import sokolov.libraryservice.models.AccountingOfBooks;
-import sokolov.libraryservice.models.Person;
-import sokolov.libraryservice.models.StatusOfAccounting;
 import sokolov.libraryservice.models.StatusOfBook;
 
 import javax.persistence.*;

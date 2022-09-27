@@ -7,10 +7,8 @@ import sokolov.libraryservice.models.AccountingOfBooks;
 import sokolov.libraryservice.models.Book;
 import sokolov.libraryservice.models.StatusOfAccounting;
 import sokolov.libraryservice.repositories.AccountingRepository;
-import sokolov.libraryservice.repositories.BooksRepository;
 import sokolov.libraryservice.repositories.PeopleRepository;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,9 +26,8 @@ public class AccountingService {
     }
 
     public List<Book> showBooksByPerson(int personId) {
-        List<AccountingOfBooks> accountingOfBooksList1 = accountingRepository.findAll();
         List<AccountingOfBooks> accountingOfBooksList = new ArrayList<>();
-        for(AccountingOfBooks accounting: accountingOfBooksList1) {
+        for(AccountingOfBooks accounting: accountingRepository.findAll()) {
             if(accounting.getPerson().getPersonId() == personId) {
                 accountingOfBooksList.add(accounting);
             }

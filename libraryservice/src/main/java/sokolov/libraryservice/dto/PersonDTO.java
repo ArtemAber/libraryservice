@@ -1,14 +1,12 @@
 package sokolov.libraryservice.dto;
 
 import org.springframework.format.annotation.DateTimeFormat;
-import sokolov.libraryservice.models.AccountingOfBooks;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Date;
-import java.util.List;
 
 public class PersonDTO {
 
