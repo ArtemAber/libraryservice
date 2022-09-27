@@ -27,7 +27,7 @@ public class PersonDTO {
 
     private boolean activity;
 
-    private List<AccountingOfBooks> accountingOfBooksList;
+//    private List<AccountingOfBooks> accountingOfBooksList;
 
     @NotEmpty(message = "Логин не должен быть пустым")
     private String login;
@@ -77,13 +77,13 @@ public class PersonDTO {
         this.activity = activity;
     }
 
-    public List<AccountingOfBooks> getAccountingOfBooksList() {
-        return accountingOfBooksList;
-    }
-
-    public void setAccountingOfBooksList(List<AccountingOfBooks> accountingOfBooksList) {
-        this.accountingOfBooksList = accountingOfBooksList;
-    }
+//    public List<AccountingOfBooks> getAccountingOfBooksList() {
+//        return accountingOfBooksList;
+//    }
+//
+//    public void setAccountingOfBooksList(List<AccountingOfBooks> accountingOfBooksList) {
+//        this.accountingOfBooksList = accountingOfBooksList;
+//    }
 
     public String getLogin() {
         return login;

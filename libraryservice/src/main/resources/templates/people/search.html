@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Поиск клиента</title>
-    <script src="jquery-3.6.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 </head>
 
 <header>
@@ -16,26 +16,55 @@
 
 <body>
 
-<form th:method="PATCH" th:action="@{/people/search}" id="searchForm">
-    <label for="startingWith">Введите часть ФИО: </label>
-    <input type="text" id="startingWith" name="startingWith"/>
-    <br/>
-    <input type="submit" value="искать">
-</form>
+<!--<form id="searchForm">-->
+<!--    <label for="startingWith">Введите часть ФИО: </label>-->
+<!--    <input type="text" id="startingWith" name="startingWith"/>-->
+<!--    <br/>-->
+<!--    <button type="button" id="get" class="searchButton" onclick="submit()">искать</button>-->
+<!--</form>-->
+<input type="text" id="starting" name="starting" onkeyup="submit()"/>
+<!--<button type="button" onclick="submit()">search</button>-->
 
 <script>
-    $(function ())
+    function submit() {
+        let start = document.getElementById("starting");
+        var it = [];
+        $.ajax({
+            type:"POST",
+            url:"/people/search",
+            data:start.value,
+            dataType:'json',
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                var d = document.getElementById('resp');
+                d.innerHTML = '';
+                console.log(response);
+                if (response.length != 0) {
+                    for (let i = 0; i < response.length; i++) {
+                        let obj = response[i];
+                        for (let key in obj) {
+                            if (key == 'personId') {
+                                console.log(key + ': ' + obj[key]);
+
+                                 var st = "<a href=\"/people/" + obj[key] + "\">" + obj['fio'] + "</a></br>";
+                                d.innerHTML += st;
+                            }
+                        }
+                    }
+                } else {
+                    d.innerHTML = 'Людей не найдено';
+                }
+            }
+        })
+    }
 </script>
 
-<div th:each="person : ${people}" th:unless="${people.isEmpty()}">
-    <a th:href="@{/people/{personId}(personId=${person.getPersonId()})}"
-       th:text="${person.getFio() + ', ' + person.getDateOfBirth()}">user</a>
-</div>
-<p th:text="${'Людей не найдено'}" th:if="${people.isEmpty()}">person</p>
+<table id="resp"></table>
 
 <form th:method="POST" th:action="@{/logout}">
     <input type="submit" value="выход">
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+    <a href="" text=""></a>
 </form>
 
 </body>

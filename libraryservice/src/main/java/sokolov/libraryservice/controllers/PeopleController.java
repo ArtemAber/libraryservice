@@ -1,5 +1,8 @@
 package sokolov.libraryservice.controllers;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import org.apache.tomcat.util.json.JSONParser;
+import org.apache.tomcat.util.json.ParseException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -9,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.filter.CharacterEncodingFilter;
 import sokolov.libraryservice.dto.BookDTO;
 import sokolov.libraryservice.dto.PersonDTO;
 import sokolov.libraryservice.models.Book;
@@ -19,6 +23,9 @@ import sokolov.libraryservice.services.PeopleService;
 import sokolov.libraryservice.util.PersonValidator;
 
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
@@ -132,14 +139,13 @@ public class PeopleController {
         return "people/search";
     }
 
-    @PatchMapping("/search")
-    public String findPeopleByTitleStartingWith(@RequestParam("startingWith") String startingWith,
-                                                Model model) {
+    @PostMapping ("/search")
+    @ResponseBody
+    public List<PersonDTO> findPeopleByTitleStartingWith(@RequestBody String startingWith) {
 
-        model.addAttribute("people", peopleService.findByFioStartingWith(startingWith).stream()
-                .map(this::convertToPersonDTO).collect(Collectors.toList()));
-
-        return "people/search";
+        System.out.println(startingWith);
+            return peopleService.findByFioStartingWith(startingWith).stream()
+                    .map(this::convertToPersonDTO).collect(Collectors.toList());
     }
 
     @PatchMapping("/{personId}/setRoleAdmin")
